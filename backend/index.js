@@ -2,6 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import * as dotenv from 'dotenv';
 import connectDB from './config/connect.js';
+import apiRoutes from './routes/index.routes.js';
 
 
 dotenv.config();
@@ -17,9 +18,7 @@ app.use(express.json({ limit: '50mb' }));
 
 // routes
 
-app.get('/', async (req, res) => {
-    res.send('hello world');
-});
+app.use('/api/v1', apiRoutes);
 
 
 // start server
