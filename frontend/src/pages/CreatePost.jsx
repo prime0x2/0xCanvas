@@ -21,10 +21,15 @@ const CreatePost = () => {
 	};
 
 	const handleChange = (e) => {
-		//
+		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
 	const handleSurpriseMe = () => {
+		const randomPrompt = getRandomPrompt(formData.prompt);
+		setFormData({ ...formData, prompt: randomPrompt });
+	};
+
+	const generateImage = () => {
 		//
 	};
 
@@ -56,12 +61,58 @@ const CreatePost = () => {
 						label='Prompt'
 						type='text'
 						name='prompt'
-						placeholder='A plush toy robot sitting against a yellow wall'
+						placeholder='An Impressionist oil painting of sunflowers in a purple vase…'
 						value={formData.prompt}
 						handleChange={handleChange}
 						isSurpriseMe
 						handleSurpriseMe={handleSurpriseMe}
 					/>
+
+					<div className='relative bg-gray-50 border border-gray-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center'>
+						{formData.photo ? (
+							<img
+								src={formData.photo}
+								alt={formData.prompt}
+								className='w-full h-full object-contain'
+							/>
+						) : (
+							<img
+								src={preview}
+								alt='preview'
+								className='w-9/12 h-9/12 object-contain opacity-40'
+							/>
+						)}
+
+						{generatingImage && (
+							<div className='absolute inset-0 z-0 flex justify-center items-center bg-black/50 rounded-lg'>
+								<Loader />
+							</div>
+						)}
+					</div>
+				</div>
+
+				<div className='mt-5 flex gap-5'>
+					<button
+						type='button'
+						onClick={generateImage}
+						className='text-white bg-green-600 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center'
+					>
+						{generatingImage ? 'Generating...' : 'Generate'}
+					</button>
+				</div>
+
+				<div className='mt-10'>
+					<p className='mt-2 text-gray-400 text-sm'>
+						Once you have created the image you want, you can share
+						it with other's in the community.
+					</p>
+
+					<button
+						type='submit'
+						className='mt-5 text-white bg-blue-600 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center'
+					>
+						{loading ? 'Sharing...' : 'Share with the community'}
+					</button>
 				</div>
 			</form>
 		</section>
