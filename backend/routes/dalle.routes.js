@@ -1,5 +1,5 @@
 import { Router } from "express";
-import dalleRoutes from "./dalle.routes.js";
+import { DALLEController } from "../controller/dalle.controller.js";
 
 const router = Router();
 
@@ -8,11 +8,11 @@ router.get("/", (req, res) => {
     res.json({
         status: 'success',
         statusCode: res.statusCode,
-        message: '0xCanvas API is running 🔥'
+        message: '0xCanvas | DALL·E API'
     })
 });
 
-router.use('/dalle', dalleRoutes);
+router.post('/create-image', DALLEController.createImage);
 
 
 export default router;
