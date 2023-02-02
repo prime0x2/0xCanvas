@@ -1,5 +1,6 @@
 import { Router } from "express";
 import dalleRoutes from "./dalle.routes.js";
+import postRoutes from "./post.routes.js";
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.get("/", (req, res) => {
 });
 
 router.use('/dalle', dalleRoutes);
+router.use('/posts', postRoutes);
 
 
 export default router;
