@@ -1,5 +1,7 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, FormField, Loader } from '../components';
+import { getPosts } from '../api';
 
 const RenderCards = ({ data, title }) => {
 	if (data?.length > 0) {
@@ -14,33 +16,14 @@ const RenderCards = ({ data, title }) => {
 };
 
 const Home = () => {
-	const [allPosts, setAllPosts] = React.useState([]);
+	const { data, status } = useQuery({
+		queryKey: ['posts'],
+		queryFn: getPosts,
+	});
+
 	const [search, setSearch] = React.useState('');
 	const [searchResults, setSearchResults] = React.useState([]);
 	const [searchTimeout, setSearchTimeout] = React.useState(null);
-	const [loading, setLoading] = React.useState(false);
-
-	React.useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				setLoading(true);
-
-				const req = await fetch(
-					'https://zeroxcanvas.onrender.com/api/v1/post'
-				);
-				const res = await req.json();
-
-				console.log('fetchPosts -> res', res);
-				setAllPosts(res.data.reverse());
-			} catch (error) {
-				console.log('fetchPosts -> error', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchPosts();
-	}, []);
 
 	const handleSearch = async (e) => {
 		clearTimeout(searchTimeout);
@@ -49,7 +32,7 @@ const Home = () => {
 
 		setSearchTimeout(
 			setTimeout(() => {
-				const searchResults = allPosts.filter(
+				const searchResults = data.filter(
 					(post) =>
 						post.name
 							.toLowerCase()
@@ -87,7 +70,7 @@ const Home = () => {
 			</div>
 
 			<div className='mt-16'>
-				{loading ? (
+				{status === 'loading' ? (
 					<div className='flex justify-center items-center'>
 						<Loader />
 					</div>
@@ -108,7 +91,7 @@ const Home = () => {
 								/>
 							) : (
 								<RenderCards
-									data={allPosts}
+									data={data}
 									title='No posts found'
 								/>
 							)}
