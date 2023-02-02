@@ -12,10 +12,10 @@ export class DALLEController {
                 status: 'success',
                 statusCode: res.statusCode,
                 message: 'Image created successfully',
-                data: image
+                image: image
             });
         } catch (error) {
-            next(error);
+            console.log('🚨 Error creating image\n', error);
         }
     }
 }
