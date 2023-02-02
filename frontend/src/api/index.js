@@ -2,7 +2,7 @@ export const getPosts = async () => {
     const req = await fetch('https://zeroxcanvas.onrender.com/api/v1/post');
     const res = await req.json();
 
-    if (res.status === 'success') {
+    if (res.success) {
         return {
             ...res,
             data: res.data.reverse()
@@ -23,6 +23,10 @@ export const createPost = async (post) => {
     });
     const res = await req.json();
 
+    if (!res.success) {
+        console.log('🚨 Error creating post\n', res);
+    }
+
     return res;
 };
 
@@ -36,6 +40,10 @@ export const generateImage = async (prompt) => {
         body: JSON.stringify({ prompt })
     });
     const res = await req.json();
+
+    if (!res.success) {
+        console.log('🚨 Error generating image\n', res);
+    }
 
     return res;
 }
