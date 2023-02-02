@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
     })
 });
 
-router.post('/create-image', DALLEController.createImage);
+router.post('/', DALLEController.createImage);
 
 
 export default router;

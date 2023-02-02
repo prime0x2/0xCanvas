@@ -19,6 +19,26 @@ const Home = () => {
 	const [loading, setLoading] = React.useState(false);
 	const [error, setError] = React.useState('');
 
+	React.useEffect(() => {
+		const fetchPosts = async () => {
+			try {
+				setLoading(true);
+
+				const req = await fetch('http://localhost:8080/api/v1/post');
+				const res = await req.json();
+
+				console.log('fetchPosts -> res', res);
+				setAllPosts(res.posts);
+			} catch (error) {
+				console.log('fetchPosts -> error', error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchPosts();
+	}, []);
+
 	return (
 		<section className=' w-full max-w-7xl mx-auto'>
 			<div>

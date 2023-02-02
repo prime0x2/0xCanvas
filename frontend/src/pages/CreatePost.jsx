@@ -16,10 +16,6 @@ const CreatePost = () => {
 	const [generatingImage, setGeneratingImage] = React.useState(false);
 	const [loading, setLoading] = React.useState(false);
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-	};
-
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
@@ -32,23 +28,20 @@ const CreatePost = () => {
 	const generateImage = async () => {
 		console.log('generateImage -> formData', formData);
 
-		if (!formData.name || !formData.prompt) return;
+		if (!formData.prompt) return;
 
 		try {
 			setGeneratingImage(true);
 
-			const req = await fetch(
-				'http://localhost:8080/api/v1/dalle/create-image',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						prompt: formData.prompt,
-					}),
-				}
-			);
+			const req = await fetch('http://localhost:8080/api/v1/dalle', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					prompt: formData.prompt,
+				}),
+			});
 			const res = await req.json();
 
 			setFormData({
@@ -59,6 +52,33 @@ const CreatePost = () => {
 			console.log('generateImage -> error', error);
 		} finally {
 			setGeneratingImage(false);
+		}
+	};
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		if (!formData.name || !formData.prompt || !formData.photo) return;
+
+		try {
+			setLoading(true);
+
+			const req = await fetch('http://localhost:8080/api/v1/post', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData),
+			});
+			const res = await req.json();
+
+			if (res.status === 'success') {
+				navigate('/');
+			}
+		} catch (error) {
+			console.log('handleSubmit -> error', error);
+		} finally {
+			setLoading(false);
 		}
 	};
 

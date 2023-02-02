@@ -1,6 +1,9 @@
+import * as dotenv from "dotenv";
 import { PostModel } from "../schema/post.schema.js";
 import { v2 as cloudinary } from "cloudinary";
 
+
+dotenv.config();
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -21,7 +24,12 @@ export class PostService {
     /*---------------- get post by id ----------------*/
 
     static async getPostById(id) {
-        return await PostModel.findById(id);
+        const post = await PostModel.findById(id);
+        if (!post) {
+            throw new Error("Post not found.");
+        }
+
+        return post;
     }
 
 

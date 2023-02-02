@@ -13,8 +13,8 @@ router.get("/", (req, res) => {
     })
 });
 
+router.use('/post', postRoutes);
 router.use('/dalle', dalleRoutes);
-router.use('/posts', postRoutes);
 
 
 export default router;
