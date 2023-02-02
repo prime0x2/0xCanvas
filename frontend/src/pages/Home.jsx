@@ -3,27 +3,21 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, FormField, Loader } from '../components';
 import { getPosts } from '../api';
 
-const RenderCards = ({ data, title }) => {
-	if (data?.length > 0) {
-		return data.map((post) => <Card key={post._id} {...post} />);
-	}
-
-	return (
-		<h2 className='mt-5 font-bold text-indigo-500 text-xl uppercase'>
-			{title}
-		</h2>
-	);
-};
-
 const Home = () => {
+	/* ---------- hooks ---------- */
+
+	const [search, setSearch] = React.useState('');
+	const [searchResults, setSearchResults] = React.useState([]);
+	const [searchTimeout, setSearchTimeout] = React.useState(null);
+
+	/* ---------- api actions ---------- */
+
 	const { data, status } = useQuery({
 		queryKey: ['posts'],
 		queryFn: getPosts,
 	});
 
-	const [search, setSearch] = React.useState('');
-	const [searchResults, setSearchResults] = React.useState([]);
-	const [searchTimeout, setSearchTimeout] = React.useState(null);
+	/* ---------- handlers ---------- */
 
 	const handleSearch = async (e) => {
 		clearTimeout(searchTimeout);
@@ -32,7 +26,7 @@ const Home = () => {
 
 		setSearchTimeout(
 			setTimeout(() => {
-				const searchResults = data.filter(
+				const searchResults = data.data.filter(
 					(post) =>
 						post.name
 							.toLowerCase()
@@ -44,6 +38,8 @@ const Home = () => {
 			}, 1500)
 		);
 	};
+
+	/* ---------- render ---------- */
 
 	return (
 		<section className=' w-full max-w-7xl mx-auto'>
@@ -91,7 +87,7 @@ const Home = () => {
 								/>
 							) : (
 								<RenderCards
-									data={data}
+									data={data.data}
 									title='No posts found'
 								/>
 							)}
@@ -100,6 +96,18 @@ const Home = () => {
 				)}
 			</div>
 		</section>
+	);
+};
+
+const RenderCards = ({ data, title }) => {
+	if (data?.length > 0) {
+		return data.map((post) => <Card key={post._id} {...post} />);
+	}
+
+	return (
+		<h2 className='mt-5 font-bold text-indigo-500 text-xl uppercase'>
+			{title}
+		</h2>
 	);
 };
 

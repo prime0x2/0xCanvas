@@ -3,9 +3,12 @@ export const getPosts = async () => {
     const res = await req.json();
 
     if (res.status === 'success') {
-        return res.data.reverse();
+        return {
+            ...res,
+            data: res.data.reverse()
+        }
     } else {
-        return [];
+        return res;
     }
 };
 

@@ -1,20 +1,45 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { preview } from '../assets';
 import { getRandomPrompt } from '../utils';
 import { FormField, Loader } from '../components';
+import { createPost, generateImage } from '../api';
 
 const CreatePost = () => {
+	/* ---------- hooks ---------- */
+
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
+
+	/* ---------- states ---------- */
 
 	const [formData, setFormData] = React.useState({
 		name: '',
 		prompt: '',
 		photo: '',
 	});
-	const [generatingImage, setGeneratingImage] = React.useState(false);
-	const [loading, setLoading] = React.useState(false);
+
+	/* ---------- api actions ---------- */
+
+	const newPost = useMutation({
+		mutationFn: (data) => createPost(data),
+		onSuccess: () => {
+			queryClient.invalidateQueries(['posts']);
+			navigate('/');
+		},
+	});
+
+	const newImage = useMutation({
+		mutationFn: (prompt) => generateImage(prompt),
+		onSuccess: (data) => {
+			const imageUrl = `data:image/jpeg;base64,${data.image}`;
+			setFormData({ ...formData, photo: imageUrl });
+		},
+	});
+
+	/* ---------- handlers ---------- */
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,37 +50,10 @@ const CreatePost = () => {
 		setFormData({ ...formData, prompt: randomPrompt });
 	};
 
-	const generateImage = async () => {
-		console.log('generateImage -> formData', formData);
-
+	const handleGenerateImage = () => {
 		if (!formData.prompt) return;
 
-		try {
-			setGeneratingImage(true);
-
-			const req = await fetch(
-				'https://zeroxcanvas.onrender.com/api/v1/dalle',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						prompt: formData.prompt,
-					}),
-				}
-			);
-			const res = await req.json();
-
-			setFormData({
-				...formData,
-				photo: `data:image/jpeg;base64,${res.image}`,
-			});
-		} catch (error) {
-			console.log('generateImage -> error', error);
-		} finally {
-			setGeneratingImage(false);
-		}
+		newImage.mutate(formData.prompt);
 	};
 
 	const handleSubmit = async (e) => {
@@ -63,30 +61,10 @@ const CreatePost = () => {
 
 		if (!formData.name || !formData.prompt || !formData.photo) return;
 
-		try {
-			setLoading(true);
-
-			const req = await fetch(
-				'https://zeroxcanvas.onrender.com/api/v1/post',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData),
-				}
-			);
-			const res = await req.json();
-
-			if (res.status === 'success') {
-				navigate('/');
-			}
-		} catch (error) {
-			console.log('handleSubmit -> error', error);
-		} finally {
-			setLoading(false);
-		}
+		newPost.mutate(formData);
 	};
+
+	/* ---------- render ---------- */
 
 	return (
 		<section className='w-full max-w-7xl mx-auto'>
@@ -138,7 +116,7 @@ const CreatePost = () => {
 							/>
 						)}
 
-						{generatingImage && (
+						{newImage.isLoading && (
 							<div className='absolute inset-0 z-0 flex justify-center items-center bg-black/50 rounded-lg'>
 								<Loader />
 							</div>
@@ -149,10 +127,10 @@ const CreatePost = () => {
 				<div className='mt-5 flex gap-5'>
 					<button
 						type='button'
-						onClick={generateImage}
+						onClick={handleGenerateImage}
 						className='text-white bg-green-600 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center'
 					>
-						{generatingImage ? 'Generating...' : 'Generate'}
+						{newImage.isLoading ? 'Generating...' : 'Generate'}
 					</button>
 				</div>
 
@@ -166,7 +144,9 @@ const CreatePost = () => {
 						type='submit'
 						className='mt-5 text-white bg-blue-600 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center'
 					>
-						{loading ? 'Sharing...' : 'Share with the community'}
+						{newPost.isLoading
+							? 'Sharing...'
+							: 'Share with the community'}
 					</button>
 				</div>
 			</form>
