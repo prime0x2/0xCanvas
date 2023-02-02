@@ -25,11 +25,13 @@ const Home = () => {
 			try {
 				setLoading(true);
 
-				const req = await fetch('http://localhost:8080/api/v1/post');
+				const req = await fetch(
+					'https://zeroxcanvas.onrender.com/api/v1/post'
+				);
 				const res = await req.json();
 
 				console.log('fetchPosts -> res', res);
-				setAllPosts(res.data);
+				setAllPosts(res.data.reverse());
 			} catch (error) {
 				console.log('fetchPosts -> error', error);
 			} finally {

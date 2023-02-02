@@ -33,15 +33,18 @@ const CreatePost = () => {
 		try {
 			setGeneratingImage(true);
 
-			const req = await fetch('http://localhost:8080/api/v1/dalle', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					prompt: formData.prompt,
-				}),
-			});
+			const req = await fetch(
+				'https://zeroxcanvas.onrender.com/api/v1/dalle',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						prompt: formData.prompt,
+					}),
+				}
+			);
 			const res = await req.json();
 
 			setFormData({
@@ -63,13 +66,16 @@ const CreatePost = () => {
 		try {
 			setLoading(true);
 
-			const req = await fetch('http://localhost:8080/api/v1/post', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formData),
-			});
+			const req = await fetch(
+				'https://zeroxcanvas.onrender.com/api/v1/post',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(formData),
+				}
+			);
 			const res = await req.json();
 
 			if (res.status === 'success') {
