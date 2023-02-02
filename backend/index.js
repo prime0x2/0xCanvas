@@ -3,6 +3,7 @@ import express from 'express';
 import * as dotenv from 'dotenv';
 import connectDB from './config/connect.js';
 import apiRoutes from './routes/index.routes.js';
+import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 
 
 dotenv.config();
@@ -19,6 +20,12 @@ app.use(express.json({ limit: '50mb' }));
 // routes
 
 app.use('/api/v1', apiRoutes);
+
+
+// error handling
+
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 
 // start server

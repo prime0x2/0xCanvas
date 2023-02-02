@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 import { PostModel } from "../schema/post.schema.js";
 import { v2 as cloudinary } from "cloudinary";
+import { NotFoundException, BadRequestException } from "../utilities/http.exception.js";
 
 
 dotenv.config();
@@ -26,7 +27,7 @@ export class PostService {
     static async getPostById(id) {
         const post = await PostModel.findById(id);
         if (!post) {
-            throw new Error("Post not found.");
+            throw NotFoundException('Post not found.');
         }
 
         return post;
@@ -39,7 +40,7 @@ export class PostService {
         const { name, prompt, photo } = body;
 
         if (!name || !prompt || !photo) {
-            throw new Error("Please fill in all fields.");
+            throw BadRequestException('Please provide all required fields.');
         }
 
         const photoUrl = await cloudinary.uploader.upload(photo);

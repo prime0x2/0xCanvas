@@ -9,13 +9,14 @@ export class DALLEController {
             const image = await DALLEService.createImage(req.body);
 
             res.json({
-                status: 'success',
-                statusCode: res.statusCode,
+                success: true,
+                status: res.statusCode,
                 message: 'Image created successfully',
                 image: image
             });
-        } catch (error) {
-            console.log('🚨 Error creating image\n', error);
+        } catch (err) {
+            console.log('🚨 Error creating image\n', err);
+            next(err);
         }
     }
 }

@@ -9,12 +9,14 @@ export class PostController {
             const posts = await PostService.getAllPosts();
 
             res.status(200).json({
-                status: "success",
-                statusCode: res.statusCode,
+                success: true,
+                status: res.statusCode,
+                message: "ALL Posts fetched successfully",
                 data: posts,
             });
         } catch (err) {
             console.log("🚨 Error getting all posts\n", err);
+            next(err);
         }
     }
 
@@ -26,12 +28,14 @@ export class PostController {
             const post = await PostService.getPostById(req.params.id);
 
             res.status(200).json({
-                status: "success",
-                statusCode: res.statusCode,
+                success: true,
+                status: res.statusCode,
+                message: "Post fetched successfully",
                 data: post,
             });
         } catch (err) {
             console.log("🚨 Error getting post by id\n", err);
+            next(err);
         }
     }
 
@@ -43,12 +47,14 @@ export class PostController {
             const newPost = await PostService.createPost(req.body);
 
             res.status(201).json({
-                status: "success",
-                statusCode: res.statusCode,
+                success: true,
+                status: res.statusCode,
+                message: "Post created successfully",
                 data: newPost,
             });
         } catch (err) {
             console.log("🚨 Error creating post\n", err);
+            next(err);
         }
     }
 }
