@@ -28,7 +28,7 @@ const Home = () => {
 				const res = await req.json();
 
 				console.log('fetchPosts -> res', res);
-				setAllPosts(res.posts);
+				setAllPosts(res.data);
 			} catch (error) {
 				console.log('fetchPosts -> error', error);
 			} finally {
@@ -77,7 +77,10 @@ const Home = () => {
 									title='No search results found'
 								/>
 							) : (
-								<RenderCards data={[]} title='No posts found' />
+								<RenderCards
+									data={allPosts}
+									title='No posts found'
+								/>
 							)}
 						</div>
 					</>
