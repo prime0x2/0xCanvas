@@ -14,10 +14,11 @@ const RenderCards = ({ data, title }) => {
 };
 
 const Home = () => {
-	const [search, setSearch] = React.useState('');
 	const [allPosts, setAllPosts] = React.useState([]);
+	const [search, setSearch] = React.useState('');
+	const [searchResults, setSearchResults] = React.useState([]);
+	const [searchTimeout, setSearchTimeout] = React.useState(null);
 	const [loading, setLoading] = React.useState(false);
-	const [error, setError] = React.useState('');
 
 	React.useEffect(() => {
 		const fetchPosts = async () => {
@@ -39,6 +40,26 @@ const Home = () => {
 		fetchPosts();
 	}, []);
 
+	const handleSearch = async (e) => {
+		clearTimeout(searchTimeout);
+
+		setSearch(e.target.value);
+
+		setSearchTimeout(
+			setTimeout(() => {
+				const searchResults = allPosts.filter(
+					(post) =>
+						post.name
+							.toLowerCase()
+							.includes(search.toLowerCase()) ||
+						post.prompt.toLowerCase().includes(search.toLowerCase())
+				);
+
+				setSearchResults(searchResults);
+			}, 1500)
+		);
+	};
+
 	return (
 		<section className=' w-full max-w-7xl mx-auto'>
 			<div>
@@ -52,8 +73,15 @@ const Home = () => {
 				</p>
 			</div>
 
-			<div className='mt-16'>
-				<FormField />
+			<div className='mt-10'>
+				<FormField
+					label='Search Posts'
+					type='text'
+					name='search'
+					placeholder='Search Posts by Name or Prompt'
+					value={search}
+					handleChange={handleSearch}
+				/>
 			</div>
 
 			<div className='mt-16'>
@@ -73,7 +101,7 @@ const Home = () => {
 						<div className='grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3'>
 							{search ? (
 								<RenderCards
-									data={[]}
+									data={searchResults}
 									title='No search results found'
 								/>
 							) : (
